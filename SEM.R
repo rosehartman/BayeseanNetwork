@@ -132,6 +132,24 @@ fit2results = table_results(fit2)
 AIC(fit2)
 
 
+#population growth instead of population
+mod3 = 'loggrow~ FallTemp + logzoops + Secchi + logPred
+Secchi ~ FallNDOI
+FallChla2 ~ FallNDOI + clams
+logzoops ~ FallNDOI +  FallChla2'
+
+#Calculate the fit
+fit3 <- sem(mod3, data = datscaled, fixed.x = FALSE)
+summary(fit3, standardized = TRUE)
+varTable(fit3)
+graph_sem(fit3)
+get_nodes(fit3)
+get_edges(fit3)
+fit3results = table_results(fit3)
+AIC(fit3)
+
+
+
 ggplot(datscaled, aes(x = loggrow3, y = SummerTemp)) + geom_point()
 ggplot(datscaled, aes(x = loggrow, y = FallTemp)) + geom_point()
 ggplot(datscaled, aes(y = loggrow3, x = FallX2)) + geom_point() + geom_smooth(method = "lm")

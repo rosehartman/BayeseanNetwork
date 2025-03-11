@@ -100,11 +100,12 @@ structure <- empty.graph(c("logzoops","FallChla2" ,"FallNDOI","FallTemp","logFMW
                             "Secchi"))
 
 # set relationships manually
-modelstring(structure) <- "[logzoops|FallChla2:FallNDOI][FallChla2|FallNDOI][FallNDOI][FallTemp][logFMWT|logzoops:Secchi:FallTemp][Secchi|FallNDOI]"
+modelstring(structure) <- "[logzoops|FallChla2:FallNDOI:FallTemp][FallChla2|FallNDOI][FallNDOI][FallTemp][logFMWT|logzoops:Secchi:FallTemp][Secchi|FallNDOI]"
 
 # subset and fit
 
-dattest = dplyr::select(datscaled, logzoops, FallChla2, FallNDOI, FallTemp, logFMWT, Secchi)
+dattest = dplyr::select(datscaled, logzoops, FallChla2, FallNDOI, FallTemp, logFMWT, Secchi) %>%
+  filter(!is.na(logFMWT))
 bn.mod <- bn.fit(structure, data =dattest)
 bn.mod
 
@@ -139,6 +140,6 @@ cpquery(bn.mod, (FMWTIndex > 100), (temp > 18 & chla < 3 ))
 #https://www.bnlearn.com/examples/xval/
 
 #Loss is predictions are computed from an arbitrary set of nodes using likelihood weighting to obtain Bayesian posterior estimates.
-eval = bn.cv(data = select(dat, -Year), bn = structure, loss = "cor-lw", loss.args = list(target = "FMWTIndex"))
+eval = bn.cv(data = dattest, bn = structure, loss = "cor-lw", loss.args = list(target = "logFMWT"))
 loss(eval)
-#so correlation of lonly 25%, not awesome. 
+
